@@ -2,6 +2,11 @@
 
 package lesson1
 
+import java.io.File
+import kotlin.Int.Companion.MAX_VALUE
+import kotlin.math.max
+import kotlin.math.min
+
 /**
  * Сортировка времён
  *
@@ -32,8 +37,48 @@ package lesson1
  *
  * В случае обнаружения неверного формата файла бросить любое исключение.
  */
+
+//Асимптотическая сложность O(N*logN), память O(N).
 fun sortTimes(inputName: String, outputName: String) {
-    TODO()
+    val timeAM = mutableListOf<Time>()
+    val timePM = mutableListOf<Time>()
+    File(inputName).forEachLine { line ->
+        val split = line.split(" ")
+        if (split[1] == "AM") {
+            timeAM.add(Time(split[0]))
+        } else {
+            timePM.add(Time(split[0]))
+        }
+    }
+
+    File(outputName).bufferedWriter().use { writer ->
+        timeAM.sorted().forEach { writer.write("$it AM\n") }
+        timePM.sorted().forEach { writer.write("$it PM\n") }
+    }
+}
+
+//класс для 12 часового формата времени(чч:мм:сс)
+class Time(private val timeString: String) : Comparable<Time> {
+    val time: List<String> = timeString.split(":")
+    private val hours = time[0].toInt() % 12
+    private val minutes = time[1].toInt()
+    private val seconds = time[2].toInt()
+
+    override operator fun compareTo(other: Time): Int {
+        val comparedHours = hours.compareTo(other.hours)
+        return if (comparedHours != 0) {
+            comparedHours
+        } else {
+            val comparedMinutes = minutes.compareTo(other.minutes)
+            if (comparedMinutes != 0)
+                comparedMinutes
+            else {
+                seconds.compareTo(other.seconds)
+            }
+        }
+    }
+
+    override fun toString(): String = timeString
 }
 
 /**
@@ -63,8 +108,72 @@ fun sortTimes(inputName: String, outputName: String) {
  * В случае обнаружения неверного формата файла бросить любое исключение.
  */
 fun sortAddresses(inputName: String, outputName: String) {
-    TODO()
+    val addressBook = sortedMapOf<Address, List<Person>>()
+    File(inputName).forEachLine { line ->
+        val parseLine = parseLine(line)
+        val key = parseLine.address
+        if (key in addressBook.keys) {
+            val value = addressBook[key]?.toMutableList()
+            value?.add(parseLine.person)
+            if (value != null) {
+                addressBook[key] = value
+            }
+        } else {
+            addressBook[parseLine.address] = listOf(parseLine.person)
+        }
+    }
+    File(outputName).bufferedWriter().use { writer ->
+        for (address in addressBook.keys) {
+            val occupants = addressBook[address]?.sorted()?.joinToString { "$it" }
+            writer.write("$address - $occupants\n")
+        }
+    }
 }
+
+
+fun parseLine(line: String): OneAddress {
+    val nameAndAddress = line.split(" - ")
+    val name = nameAndAddress[0].split(" ")
+    val person = Person(name[1], name[0])
+    val addressLine = nameAndAddress[1].split(" ")
+    val address = Address(addressLine[0], addressLine[1].toInt())
+    return OneAddress(person, address)
+}
+
+class Person(private val firstName: String, private val lastName: String) : Comparable<Person> {
+    override fun compareTo(other: Person): Int {
+        val compareLastName = lastName.compareTo(other.lastName)
+        val compareFirstName = firstName.compareTo(other.firstName)
+        return if (compareLastName == 0) {
+            compareFirstName
+        } else {
+            compareLastName
+        }
+    }
+
+    override fun toString(): String {
+        return "$lastName $firstName"
+    }
+}
+
+class Address(private val street: String, private val house: Int) : Comparable<Address> {
+    override fun compareTo(other: Address): Int {
+        val compareStreet = street.compareTo(other.street)
+        val compareHouse = house.compareTo(other.house)
+        return if (compareStreet == 0) {
+            compareHouse
+        } else {
+            compareStreet
+        }
+    }
+
+    override fun toString(): String {
+        return "$street $house"
+    }
+}
+
+class OneAddress(val person: Person, val address: Address)
+
 
 /**
  * Сортировка температур
@@ -96,9 +205,27 @@ fun sortAddresses(inputName: String, outputName: String) {
  * 99.5
  * 121.3
  */
+
+//Асимптотическая сложность O(N), память O(N)
 fun sortTemperatures(inputName: String, outputName: String) {
-    TODO()
+    val temperatures = arrayOfNulls<Pair<Int, String>>(7731)
+    File(inputName).forEachLine { line ->
+        val index = (line.toDouble() * 10 + 2730).toInt()
+        val reduplication = (temperatures[index]?.first ?: -1) + 1
+        temperatures[index] = Pair(reduplication, line)
+    }
+    File(outputName).bufferedWriter().use { writer ->
+        for (pair in temperatures) {
+            if (pair != null) {
+                for (reduplication in 0..pair.first) {
+                    writer.write("${pair.second}\n")
+                }
+
+            }
+        }
+    }
 }
+
 
 /**
  * Сортировка последовательности
@@ -130,8 +257,48 @@ fun sortTemperatures(inputName: String, outputName: String) {
  * 2
  */
 fun sortSequence(inputName: String, outputName: String) {
-    TODO()
+    val sequence = mutableListOf<Int>()
+    File(inputName).forEachLine { line ->
+        val number = line.toInt()
+        sequence.add(number)
+    }
+
+    val duplicate = mutableMapOf<Int, Int>()
+    var max = -1
+    var minValue = MAX_VALUE
+    for (el in sequence) {
+        if (el !in duplicate.keys) {
+            duplicate[el] = 1
+        } else {
+            val count = duplicate[el]
+            if (count != null) {
+                duplicate[el] = count + 1
+            }
+        }
+    }
+    for (pair in duplicate) {
+        if (pair != null) {
+            if (pair.value > max) {
+                max = pair.value
+            }
+        }
+    }
+    for (pair in duplicate) {
+        if (pair != null) {
+            if (pair.value == max && pair.key < minValue) {
+                minValue = pair.key
+            }
+        }
+    }
+
+    File(outputName).bufferedWriter().use { writer ->
+        sequence.filter { it != minValue }.forEach { writer.write("$it\n") }
+        for (i in 0 until max) {
+            run { writer.write("$minValue\n") }
+        }
+    }
 }
+
 
 /**
  * Соединить два отсортированных массива в один
@@ -147,7 +314,23 @@ fun sortSequence(inputName: String, outputName: String) {
  *
  * Результат: second = [1 3 4 9 9 13 15 20 23 28]
  */
+
+//Асимптотическая сложность O(N), память O(N)
 fun <T : Comparable<T>> mergeArrays(first: Array<T>, second: Array<T?>) {
-    TODO()
+    var firstArrayIndex = 0
+    var secondArrayIndex = first.size
+    for (i in second.indices) {
+        if (secondArrayIndex >= second.size ||
+            (firstArrayIndex < first.size && first[firstArrayIndex] <= second[secondArrayIndex]!!)
+        ) {
+            second[i] = first[firstArrayIndex]
+            firstArrayIndex += 1
+        } else {
+            second[i] = second[secondArrayIndex]
+            secondArrayIndex += 1
+        }
+    }
 }
+
+
 
