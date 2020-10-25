@@ -119,25 +119,43 @@ fun josephTask(menNumber: Int, choiceInterval: Int): Int {
  * Если имеется несколько самых длинных общих подстрок одной длины,
  * вернуть ту из них, которая встречается раньше в строке first.
  */
+//Асимптотическая сложность O(N*M*K), память O(N*M*K),
+// где N - длина первой строки, M - длина второй строки и K - длина самой длинной общей подстроки.
 fun longestCommonSubstring(first: String, second: String): String {
     var subStr = ""
     var maxStr = ""
-    val matrix = Array(first.length) { IntArray(second.length) { 0 } }
-    for (index in first.indices) {
-        for (secIndex in second.indices) {
+    val n = first.length
+    val m = second.length
+    val matrix = Array(n) { IntArray(m) { 0 } }
+    for (index in 0 until n) {
+        for (secIndex in 0 until m) {
             if (first[index] == second[secIndex]) {
                 matrix[index][secIndex] = 1
             }
         }
     }
-    for (index in first.indices - 1) {
-        for (secIndex in second.indices - 1) {
-            if (matrix[index][secIndex] == 1 && matrix[index + 1][secIndex + 1] == 1) {
-                subStr += first.toCharArray()[index]
+    for (index in 0 until n) {
+        for (secIndex in 0 until m) {
+            if (matrix[index][secIndex] == 1) {
+                subStr = first[index].toString()
+                var count = index + 1
+                var secCount = secIndex + 1
+                while (count < n && secCount < m && matrix[count][secCount] == 1) {
+                    subStr += first[count]
+                    count += 1
+                    secCount += 1
+                }
+            }
+            if (subStr.length > maxStr.length) {
+                maxStr = subStr
             }
         }
     }
-    return maxStr
+    return if (maxStr.length <= 1) {
+        ""
+    } else {
+        maxStr
+    }
 }
 
 /**
