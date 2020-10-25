@@ -4,8 +4,6 @@ package lesson1
 
 import java.io.File
 import kotlin.Int.Companion.MAX_VALUE
-import kotlin.math.max
-import kotlin.math.min
 
 /**
  * Сортировка времён
@@ -107,6 +105,8 @@ class Time(private val timeString: String) : Comparable<Time> {
  *
  * В случае обнаружения неверного формата файла бросить любое исключение.
  */
+
+//Асимптотическая сложность O(N*logN), память O(N)
 fun sortAddresses(inputName: String, outputName: String) {
     val addressBook = sortedMapOf<Address, List<Person>>()
     File(inputName).forEachLine { line ->
@@ -256,6 +256,8 @@ fun sortTemperatures(inputName: String, outputName: String) {
  * 2
  * 2
  */
+
+//Асимптотическая сложность O(N), память O(N)
 fun sortSequence(inputName: String, outputName: String) {
     val sequence = mutableListOf<Int>()
     File(inputName).forEachLine { line ->
@@ -277,17 +279,13 @@ fun sortSequence(inputName: String, outputName: String) {
         }
     }
     for (pair in duplicate) {
-        if (pair != null) {
-            if (pair.value > max) {
-                max = pair.value
-            }
+        if (pair.value > max) {
+            max = pair.value
         }
     }
     for (pair in duplicate) {
-        if (pair != null) {
-            if (pair.value == max && pair.key < minValue) {
-                minValue = pair.key
-            }
+        if (pair.value == max && pair.key < minValue) {
+            minValue = pair.key
         }
     }
 

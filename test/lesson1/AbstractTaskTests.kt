@@ -45,6 +45,13 @@ abstract class AbstractTaskTests : AbstractFileTests() {
         } finally {
             File("temp.txt").delete()
         }
+        //My test
+        try {
+            sortTimes("input/time_in3.txt", "MyTemp.txt")
+            assertFileContent("MyTemp.txt", File("input/time_out3.txt").readLines())
+        } finally {
+            File("MyTemp.txt").delete()
+        }
     }
 
     protected fun sortAddresses(sortAddresses: (String, String) -> Unit) {

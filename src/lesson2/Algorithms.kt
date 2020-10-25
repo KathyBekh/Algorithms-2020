@@ -2,6 +2,8 @@
 
 package lesson2
 
+import java.io.File
+
 /**
  * Получение наибольшей прибыли (она же -- поиск максимального подмассива)
  * Простая
@@ -26,8 +28,25 @@ package lesson2
  *
  * В случае обнаружения неверного формата файла бросить любое исключение.
  */
+//Асимптотическая сложность O(N^2), память O(N)
 fun optimizeBuyAndSell(inputName: String): Pair<Int, Int> {
-    TODO()
+    var pair = Pair(0, 0)
+    var profit = -1
+    val prices = mutableListOf<Int>()
+    File(inputName).forEachLine { line ->
+        prices.add(line.toInt())
+    }
+    val arrayPrices = prices.toIntArray()
+    for (ind in 0..arrayPrices.size) {
+        for (secInd in ind + 1 until arrayPrices.size) {
+            val newProfit = prices[secInd] - prices[ind]
+            if (newProfit > profit) {
+                profit = newProfit
+                pair = Pair(ind + 1, secInd + 1)
+            }
+        }
+    }
+    return pair
 }
 
 /**
@@ -79,8 +98,14 @@ fun optimizeBuyAndSell(inputName: String): Pair<Int, Int> {
  * Общий комментарий: решение из Википедии для этой задачи принимается,
  * но приветствуется попытка решить её самостоятельно.
  */
+//Думала что придумала свой алгоритм, но сравнив его с википедией, поняла что нет:(
+//Асимптотическая сложность O(N), память O(1)
 fun josephTask(menNumber: Int, choiceInterval: Int): Int {
-    TODO()
+    var survivor = 1
+    for (men in 1..menNumber) {
+        survivor = (survivor + choiceInterval - 1) % men + 1
+    }
+    return survivor
 }
 
 /**
@@ -95,7 +120,24 @@ fun josephTask(menNumber: Int, choiceInterval: Int): Int {
  * вернуть ту из них, которая встречается раньше в строке first.
  */
 fun longestCommonSubstring(first: String, second: String): String {
-    TODO()
+    var subStr = ""
+    var maxStr = ""
+    val matrix = Array(first.length) { IntArray(second.length) { 0 } }
+    for (index in first.indices) {
+        for (secIndex in second.indices) {
+            if (first[index] == second[secIndex]) {
+                matrix[index][secIndex] = 1
+            }
+        }
+    }
+    for (index in first.indices - 1) {
+        for (secIndex in second.indices - 1) {
+            if (matrix[index][secIndex] == 1 && matrix[index + 1][secIndex + 1] == 1) {
+                subStr += first.toCharArray()[index]
+            }
+        }
+    }
+    return maxStr
 }
 
 /**
