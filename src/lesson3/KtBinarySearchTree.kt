@@ -6,7 +6,7 @@ import kotlin.math.max
 // attention: Comparable is supported but Comparator is not
 class KtBinarySearchTree<T : Comparable<T>> : AbstractMutableSet<T>(), CheckableSortedSet<T> {
 
-    private class Node<T>(
+    internal class Node<T>(
         val value: T
     ) {
         var left: Node<T>? = null
@@ -14,7 +14,7 @@ class KtBinarySearchTree<T : Comparable<T>> : AbstractMutableSet<T>(), Checkable
         var parent: Node<T>? = null
     }
 
-    private var root: Node<T>? = null
+    internal var root: Node<T>? = null
 
     override var size = 0
         private set
@@ -83,17 +83,21 @@ class KtBinarySearchTree<T : Comparable<T>> : AbstractMutableSet<T>(), Checkable
      * Средняя
      */
 
-
+//Асимптотическая сложность O(высоты дерева), память O(1)
     override fun remove(element: T): Boolean {
         val node = find(element) ?: return false
-        val parent = node.parent
+        if (node.value != element) {
+            return false
+        }
+
+        val nodeParent = node.parent
         when {
             (node.left == null && node.right == null) -> {
-                if (parent != null) {
-                    if (parent.left === node) {
-                        parent.left = null
+                if (nodeParent != null) {
+                    if (nodeParent.left === node) {
+                        nodeParent.left = null
                     } else {
-                        parent.right = null
+                        nodeParent.right = null
                     }
                 } else {
                     root = null
@@ -101,52 +105,53 @@ class KtBinarySearchTree<T : Comparable<T>> : AbstractMutableSet<T>(), Checkable
             }
             (node.left == null && node.right != null) || (node.left != null && node.right == null) -> {
                 val child = node.left ?: node.right!!
-                if (parent == null) {
+                if (nodeParent == null) {
                     root = child
                 } else {
-                    if (parent.left === node) {
-                        parent.left = child
-                        child.parent = parent
+                    if (nodeParent.left === node) {
+                        nodeParent.left = child
+                        child.parent = nodeParent
                     } else {
-                        parent.right = child
-                        child.parent = parent
+                        nodeParent.right = child
+                        child.parent = nodeParent
                     }
                 }
             }
             else -> {
-                var replacement = node.right!!
+                //оба потомка существуют.
+                var replacementNode = node.right!!
                 var replacementParent = node
-                while (replacement.left != null) {
-                    replacementParent = replacement
-                    replacement = replacement.left!!
+                while (replacementNode.left != null) {
+                    replacementParent = replacementNode
+                    replacementNode = replacementNode.left!!
                 }
-                if (replacement === node.right) {
-                    replacement.left = node.left
-                    if (parent != null) {
-                        if (parent.left === node) {
-                            parent.left = replacement
-                            replacement.parent = parent
+                if (replacementNode === node.right) {
+                    replacementNode.left = node.left
+                    if (nodeParent != null) {
+                        if (nodeParent.left === node) {
+                            nodeParent.left = replacementNode
+                            replacementNode.parent = nodeParent
                         } else {
-                            parent.right = replacement
-                            replacement.parent = parent
+                            nodeParent.right = replacementNode
+                            replacementNode.parent = nodeParent
                         }
                     } else {
-                        root = replacement
+                        root = replacementNode
                     }
                 } else {
-                    replacementParent.left = replacement.right
-                    replacement.right = node.right
-                    replacement.left = node.left
-                    if (parent != null) {
-                        if (parent.left === node) {
-                            parent.left = replacement
-                            replacement.parent = parent
+                    replacementParent.left = replacementNode.right
+                    replacementNode.right = node.right
+                    replacementNode.left = node.left
+                    if (nodeParent != null) {
+                        if (nodeParent.left === node) {
+                            nodeParent.left = replacementNode
+                            replacementNode.parent = nodeParent
                         } else {
-                            parent.right = replacement
-                            replacement.parent = parent
+                            nodeParent.right = replacementNode
+                            replacementNode.parent = nodeParent
                         }
                     } else {
-                        root = replacement
+                        root = replacementNode
                     }
                 }
             }
