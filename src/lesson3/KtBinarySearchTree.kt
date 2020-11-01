@@ -1,7 +1,9 @@
 package lesson3
 
 import java.util.*
+import kotlin.NoSuchElementException
 import kotlin.math.max
+
 
 // attention: Comparable is supported but Comparator is not
 class KtBinarySearchTree<T : Comparable<T>> : AbstractMutableSet<T>(), CheckableSortedSet<T> {
@@ -118,7 +120,8 @@ class KtBinarySearchTree<T : Comparable<T>> : AbstractMutableSet<T>(), Checkable
                 }
             }
             else -> {
-                //оба потомка существуют.
+                //если существуют оба потомка, то мы заменяем удаляемый узел правым потомком, перестраиваем левых потомков
+                //и передвигаем правых на уровень выше.
                 var replacementNode = node.right!!
                 var replacementParent = node
                 while (replacementNode.left != null) {
@@ -170,17 +173,18 @@ class KtBinarySearchTree<T : Comparable<T>> : AbstractMutableSet<T>(), Checkable
         BinarySearchTreeIterator()
 
     inner class BinarySearchTreeIterator internal constructor() : MutableIterator<T> {
-        private var next: Node<T>?
-        private val stack: Stack<Node<T>> = Stack()
+        private var stack = Stack<Node<T>>()
 
-        init {
-            next = root
-            while (next != null) {
-                stack.push(next)
-                next = next!!.left
+        private fun pushToLeft(node: Node<T>?) {
+            if (node != null) {
+                stack.push(node)
+                pushToLeft(node.left)
             }
         }
 
+        init {
+            pushToLeft(root)
+        }
 
         /**
          * Проверка наличия следующего элемента
@@ -192,9 +196,8 @@ class KtBinarySearchTree<T : Comparable<T>> : AbstractMutableSet<T>(), Checkable
          *
          * Средняя
          */
-        override fun hasNext(): Boolean {
-            return stack.isNotEmpty()
-        }
+
+        override fun hasNext(): Boolean = !stack.empty()
 
         /**
          * Получение следующего элемента
@@ -209,8 +212,15 @@ class KtBinarySearchTree<T : Comparable<T>> : AbstractMutableSet<T>(), Checkable
          *
          * Средняя
          */
+//        Асимптотическая сложность O(высоты дерева), память O(1)
         override fun next(): T {
-            TODO()
+            if (stack.isEmpty()) {
+                throw NoSuchElementException()
+            }
+
+            val node = stack.pop()
+            pushToLeft(node.right)
+            return node.value
         }
 
         /**

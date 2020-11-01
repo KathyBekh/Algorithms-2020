@@ -2,7 +2,6 @@ package lesson3
 
 import org.junit.jupiter.api.Test
 import kotlin.test.assertFalse
-import kotlin.test.assertNull
 
 class RemoveTests {
 
