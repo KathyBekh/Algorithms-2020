@@ -169,7 +169,7 @@ fun longestCommonSubstring(first: String, second: String): String {
  * Справка: простым считается число, которое делится нацело только на 1 и на себя.
  * Единица простым числом не считается.
  */
-//Асимптотическая сложность O(N), память O(1)
+//Асимптотическая сложность O(N*sqrt(N)), память O(1)
 fun calcPrimesNumber(limit: Int): Int {
     var count = 0
     for (i in 0..limit) {

@@ -11,6 +11,7 @@ class KtBinarySearchTree<T : Comparable<T>> : AbstractMutableSet<T>(), Checkable
     ) {
         var left: Node<T>? = null
         var right: Node<T>? = null
+        var parent: Node<T>? = null
     }
 
     private var root: Node<T>? = null
@@ -57,10 +58,12 @@ class KtBinarySearchTree<T : Comparable<T>> : AbstractMutableSet<T>(), Checkable
             comparison < 0 -> {
                 assert(closest.left == null)
                 closest.left = newNode
+                newNode.parent = closest
             }
             else -> {
                 assert(closest.right == null)
                 closest.right = newNode
+                newNode.parent = closest
             }
         }
         size++
@@ -79,8 +82,80 @@ class KtBinarySearchTree<T : Comparable<T>> : AbstractMutableSet<T>(), Checkable
      *
      * Средняя
      */
+
+
     override fun remove(element: T): Boolean {
-        TODO()
+        val node = find(element) ?: return false
+        val parent = node.parent
+        when {
+            (node.left == null && node.right == null) -> {
+                if (parent != null) {
+                    if (parent.left === node) {
+                        parent.left = null
+                    } else {
+                        parent.right = null
+                    }
+                } else {
+                    root = null
+                }
+            }
+            (node.left == null && node.right != null) || (node.left != null && node.right == null) -> {
+                val child = node.left ?: node.right!!
+                if (parent == null) {
+                    root = child
+                } else {
+                    if (parent.left === node) {
+                        parent.left = child
+                        child.parent = parent
+                    } else {
+                        parent.right = child
+                        child.parent = parent
+                    }
+                }
+            }
+            else -> {
+                var replacement = node.right!!
+                var replacementParent = node
+                while (replacement.left != null) {
+                    replacementParent = replacement
+                    replacement = replacement.left!!
+                }
+                if (replacement === node.right) {
+                    replacement.left = node.left
+                    if (parent != null) {
+                        if (parent.left === node) {
+                            parent.left = replacement
+                            replacement.parent = parent
+                        } else {
+                            parent.right = replacement
+                            replacement.parent = parent
+                        }
+                    } else {
+                        root = replacement
+                    }
+                } else {
+                    replacementParent.left = replacement.right
+                    replacement.right = node.right
+                    replacement.left = node.left
+                    if (parent != null) {
+                        if (parent.left === node) {
+                            parent.left = replacement
+                            replacement.parent = parent
+                        } else {
+                            parent.right = replacement
+                            replacement.parent = parent
+                        }
+                    } else {
+                        root = replacement
+                    }
+                }
+            }
+        }
+        node.parent = null
+        node.left = null
+        node.right = null
+        size--
+        return true
     }
 
     override fun comparator(): Comparator<in T>? =
@@ -90,6 +165,17 @@ class KtBinarySearchTree<T : Comparable<T>> : AbstractMutableSet<T>(), Checkable
         BinarySearchTreeIterator()
 
     inner class BinarySearchTreeIterator internal constructor() : MutableIterator<T> {
+        private var next: Node<T>?
+        private val stack: Stack<Node<T>> = Stack()
+
+        init {
+            next = root
+            while (next != null) {
+                stack.push(next)
+                next = next!!.left
+            }
+        }
+
 
         /**
          * Проверка наличия следующего элемента
@@ -102,8 +188,7 @@ class KtBinarySearchTree<T : Comparable<T>> : AbstractMutableSet<T>(), Checkable
          * Средняя
          */
         override fun hasNext(): Boolean {
-            // TODO
-            throw NotImplementedError()
+            return stack.isNotEmpty()
         }
 
         /**
@@ -120,8 +205,7 @@ class KtBinarySearchTree<T : Comparable<T>> : AbstractMutableSet<T>(), Checkable
          * Средняя
          */
         override fun next(): T {
-            // TODO
-            throw NotImplementedError()
+            TODO()
         }
 
         /**
@@ -140,7 +224,6 @@ class KtBinarySearchTree<T : Comparable<T>> : AbstractMutableSet<T>(), Checkable
             // TODO
             throw NotImplementedError()
         }
-
     }
 
     /**

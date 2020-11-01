@@ -41,6 +41,7 @@ fun sortTimes(inputName: String, outputName: String) {
     val timeAM = mutableListOf<Time>()
     val timePM = mutableListOf<Time>()
     File(inputName).forEachLine { line ->
+        require(Regex("""\d\d:\d\d:\d\d ((AM)|(PM))""").matches(line))
         val split = line.split(" ")
         if (split[1] == "AM") {
             timeAM.add(Time(split[0]))
@@ -58,9 +59,26 @@ fun sortTimes(inputName: String, outputName: String) {
 //класс для 12 часового формата времени(чч:мм:сс)
 class Time(private val timeString: String) : Comparable<Time> {
     val time: List<String> = timeString.split(":")
-    private val hours = time[0].toInt() % 12
-    private val minutes = time[1].toInt()
-    private val seconds = time[2].toInt()
+    private val hours = validFormatHours(time[0].toInt()) % 12
+    private val minutes = validFormat(time[1].toInt())
+    private val seconds = validFormat(time[2].toInt())
+
+    private fun validFormatHours(num: Int): Int {
+        return if (num >= 13) {
+            throw IllegalArgumentException()
+        } else {
+            num
+        }
+    }
+
+    private fun validFormat(num: Int): Int {
+        return if (num >= 60) {
+            throw IllegalArgumentException()
+        } else {
+            num
+        }
+    }
+
 
     override operator fun compareTo(other: Time): Int {
         val comparedHours = hours.compareTo(other.hours)
@@ -312,6 +330,7 @@ fun sortSequence(inputName: String, outputName: String) {
  *
  * Результат: second = [1 3 4 9 9 13 15 20 23 28]
  */
+
 
 //Асимптотическая сложность O(N), память O(N)
 fun <T : Comparable<T>> mergeArrays(first: Array<T>, second: Array<T?>) {
