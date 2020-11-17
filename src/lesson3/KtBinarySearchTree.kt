@@ -1,5 +1,6 @@
 package lesson3
 
+import java.lang.IllegalStateException
 import java.util.*
 import kotlin.NoSuchElementException
 import kotlin.math.max
@@ -197,7 +198,7 @@ class KtBinarySearchTree<T : Comparable<T>> : AbstractMutableSet<T>(), Checkable
          * Средняя
          */
 
-        override fun hasNext(): Boolean = !stack.empty()
+        override fun hasNext(): Boolean = !stack.isEmpty()
 
         /**
          * Получение следующего элемента
@@ -214,8 +215,8 @@ class KtBinarySearchTree<T : Comparable<T>> : AbstractMutableSet<T>(), Checkable
          */
 //        Асимптотическая сложность O(высоты дерева), память O(1)
         override fun next(): T {
-            if (stack.isEmpty()) {
-                throw NoSuchElementException()
+            if (!hasNext()) {
+                throw IllegalStateException()
             }
 
             val node = stack.pop()
