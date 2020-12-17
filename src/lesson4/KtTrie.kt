@@ -1,5 +1,7 @@
 package lesson4
 
+import java.lang.IllegalStateException
+
 /**
  * Префиксное дерево для строк
  */
@@ -47,6 +49,7 @@ class KtTrie : AbstractMutableSet<String>(), MutableSet<String> {
             }
         }
         if (modified) {
+            this
             size++
         }
         return modified
@@ -68,8 +71,54 @@ class KtTrie : AbstractMutableSet<String>(), MutableSet<String> {
      *
      * Сложная
      */
-    override fun iterator(): MutableIterator<String> {
-        TODO()
+
+    override fun iterator(): MutableIterator<String> = TrieIterator()
+
+    inner class TrieIterator internal constructor() : MutableIterator<String> {
+
+        private val words = mutableListOf<String>()
+        var nextElementIndex = 0
+        var currentWord = ""
+
+        init {
+            traverse(root, "")
+//            println(words)
+        }
+
+        private fun traverse(node: Node, word: String) {
+            for (child in node.children) {
+                if (child.key == 0.toChar()) {
+                    words.add(word)
+                } else {
+                    traverse(child.value, word + child.key)
+                }
+            }
+        }
+
+        override fun hasNext(): Boolean {
+            return nextElementIndex < words.size
+        }
+
+        override fun next(): String {
+
+            if (!hasNext()) {
+                throw IllegalStateException()
+            }
+
+            val word = words[nextElementIndex]
+            nextElementIndex += 1
+            return word
+        }
+
+        override fun remove() {
+
+            if (currentWord == "") throw IllegalStateException()
+
+            remove(currentWord)
+            words.remove(currentWord)
+            println(currentWord)
+            currentWord = ""
+        }
     }
 
 }

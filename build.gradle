@@ -72,7 +72,8 @@ task kotoedRun(
         dependsOn: ['clean', 'testClasses']) {
     def testPackages = sourceSets['test'].java.srcDirs.stream()
             .flatMap {
-                dir -> Files.walk(dir.toPath())
+                dir ->
+                    Files.walk(dir.toPath())
                             .map { it.toFile() }
                             .filter { it.isDirectory() }
                             .map { it.path }
