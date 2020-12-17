@@ -23,6 +23,7 @@ class KtTrie : AbstractMutableSet<String>(), MutableSet<String> {
 
     private fun String.withZero() = this + 0.toChar()
 
+    //Асимптотическая сложность O(n), где n - длина удаляемого слова.
     private fun findNode(element: String): Node? {
         var current = root
         for (char in element) {
@@ -49,7 +50,6 @@ class KtTrie : AbstractMutableSet<String>(), MutableSet<String> {
             }
         }
         if (modified) {
-            this
             size++
         }
         return modified
@@ -78,13 +78,14 @@ class KtTrie : AbstractMutableSet<String>(), MutableSet<String> {
 
         private val words = mutableListOf<String>()
         var nextElementIndex = 0
-        var currentWord = ""
+        var lastDeletedIndex = -1
 
         init {
             traverse(root, "")
-//            println(words)
         }
 
+        //Асимптотическая сложность O(Nodes), где Nodes - количество узлов в дереве
+        // память O(n), где n-количество слов в дереве
         private fun traverse(node: Node, word: String) {
             for (child in node.children) {
                 if (child.key == 0.toChar()) {
@@ -95,10 +96,12 @@ class KtTrie : AbstractMutableSet<String>(), MutableSet<String> {
             }
         }
 
+        //Асимптотическая сложность O(1), память O(1)
         override fun hasNext(): Boolean {
             return nextElementIndex < words.size
         }
 
+        //Асимптотическая сложность O(1), память O(1)
         override fun next(): String {
 
             if (!hasNext()) {
@@ -110,15 +113,18 @@ class KtTrie : AbstractMutableSet<String>(), MutableSet<String> {
             return word
         }
 
+        //Асимптотическая сложность O(n), где n - длина удаляемого слова.
+        // память O(1)
         override fun remove() {
+            val toDelete = nextElementIndex - 1
+            if (nextElementIndex == 0 || lastDeletedIndex == toDelete) {
+                println(nextElementIndex)
+                throw IllegalStateException()
+            }
 
-            if (currentWord == "") throw IllegalStateException()
-
+            val currentWord = words[toDelete]
             remove(currentWord)
-            words.remove(currentWord)
-            println(currentWord)
-            currentWord = ""
+            lastDeletedIndex = toDelete
         }
     }
-
 }
