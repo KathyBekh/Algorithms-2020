@@ -3,6 +3,7 @@ package lesson4
 import org.junit.jupiter.api.Test
 
 class TraversalTest {
+    //Tests for debug.
 
     private fun fullTree(): KtTrie {
         val trie = KtTrie();
@@ -22,6 +23,7 @@ class TraversalTest {
     fun traverse() {
         val trie = fullTree()
         trie.iterator()
+
     }
 
     @Test

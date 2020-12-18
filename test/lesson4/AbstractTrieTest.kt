@@ -175,7 +175,4 @@ abstract class AbstractTrieTest {
             println("All clear!")
         }
     }
-
-    //My tests
-
 }

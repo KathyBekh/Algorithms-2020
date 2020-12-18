@@ -77,8 +77,8 @@ class KtTrie : AbstractMutableSet<String>(), MutableSet<String> {
     inner class TrieIterator internal constructor() : MutableIterator<String> {
 
         private val words = mutableListOf<String>()
-        var nextElementIndex = 0
-        var lastDeletedIndex = -1
+        private var nextElementIndex = 0
+        private var lastDeletedIndex = -1
 
         init {
             traverse(root, "")
@@ -118,7 +118,6 @@ class KtTrie : AbstractMutableSet<String>(), MutableSet<String> {
         override fun remove() {
             val toDelete = nextElementIndex - 1
             if (nextElementIndex == 0 || lastDeletedIndex == toDelete) {
-                println(nextElementIndex)
                 throw IllegalStateException()
             }
 
