@@ -7,7 +7,15 @@ data class Fill(val cost: Int, val items: Set<Item>) {
 
     constructor(cost: Int, vararg items: Item) : this(cost, items.toSet())
 
+    constructor(items: Set<Item>) : this(items.sumBy { it.cost }, items)
+
     constructor(item: Item) : this(item.cost, item)
+
+    constructor() : this(0, emptySet())
+
+    fun weight(): Int = items.sumBy { it.weight }
+
+    fun removeItems(amount: Int): Fill = Fill(items.toMutableList().shuffled().subList(0, items.size - amount).toSet())
 }
 
 data class LoadCount(val load: Int, val count: Int)
