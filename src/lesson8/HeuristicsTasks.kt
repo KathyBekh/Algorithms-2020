@@ -7,6 +7,7 @@ import lesson6.Path
 import lesson7.knapsack.Fill
 import lesson7.knapsack.Item
 import kotlin.math.ceil
+import kotlin.random.Random
 
 // Примечание: в этом уроке достаточно решить одну задачу
 
@@ -27,7 +28,7 @@ fun fillKnapsackHeuristics(capacity: Int, items: List<Item>, vararg parameters: 
     for (i in 0..iterations) {
         val amount = amountOfItemsToReplace(i, iterations, selectedItems.items.size)
         val newSolution = fillWithRandomItems(capacity, selectedItems.removeItems(amount), items)
-        if (newSolution.cost > selectedItems.cost) {
+        if (newSolution.cost > selectedItems.cost || shouldPickWorseNewSolution(i, iterations)) {
             selectedItems = newSolution
         }
     }
@@ -51,10 +52,19 @@ private fun fillWithRandomItems(capacity: Int, knapsack: Fill, items: List<Item>
     return selectedItems
 }
 
-private fun amountOfItemsToReplace(currentIteration: Int, maxIterations: Int, totalItems: Int): Int {
-    return ceil(totalItems.toDouble() * ((maxIterations - currentIteration).toDouble() / maxIterations.toDouble()))
-        .toInt()
+private fun amountOfItemsToReplace(currentIteration: Int, maxIterations: Int, totalItems: Int): Int =
+    ceil(totalItems.toDouble() * reverseCompletionRatio(currentIteration, maxIterations)).toInt()
+
+private fun shouldPickWorseNewSolution(currentIteration: Int, maxIterations: Int): Boolean {
+    val startingProbabilityToTakeWorseSolution = 0.8
+    return Random.nextDouble() * reverseCompletionRatio(
+        currentIteration,
+        maxIterations
+    ) > (1 - startingProbabilityToTakeWorseSolution)
 }
+
+private fun reverseCompletionRatio(currentIteration: Int, maxIterations: Int): Double =
+    (maxIterations - currentIteration).toDouble() / maxIterations.toDouble()
 
 /**
  * Решить задачу коммивояжёра (см. урок 5) методом колонии муравьёв
