@@ -6,6 +6,7 @@ import lesson6.Graph
 import lesson6.Path
 import lesson7.knapsack.Fill
 import lesson7.knapsack.Item
+import kotlin.math.ceil
 
 // Примечание: в этом уроке достаточно решить одну задачу
 
@@ -24,7 +25,8 @@ fun fillKnapsackHeuristics(capacity: Int, items: List<Item>, vararg parameters: 
     var selectedItems = fillWithRandomItems(capacity, Fill(), items);
 
     for (i in 0..iterations) {
-        val newSolution = fillWithRandomItems(capacity, Fill(), items)
+        val amount = amountOfItemsToReplace(i, iterations, selectedItems.items.size)
+        val newSolution = fillWithRandomItems(capacity, selectedItems.removeItems(amount), items)
         if (newSolution.cost > selectedItems.cost) {
             selectedItems = newSolution
         }
@@ -47,6 +49,11 @@ private fun fillWithRandomItems(capacity: Int, knapsack: Fill, items: List<Item>
     }
 
     return selectedItems
+}
+
+private fun amountOfItemsToReplace(currentIteration: Int, maxIterations: Int, totalItems: Int): Int {
+    return ceil(totalItems.toDouble() * ((maxIterations - currentIteration).toDouble() / maxIterations.toDouble()))
+        .toInt()
 }
 
 /**
