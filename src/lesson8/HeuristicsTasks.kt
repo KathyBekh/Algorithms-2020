@@ -19,8 +19,35 @@ import lesson7.knapsack.Item
  * Используйте parameters для передачи дополнительных параметров алгоритма
  * (не забудьте изменить тесты так, чтобы они передавали эти параметры)
  */
-fun fillKnapsackHeuristics(load: Int, items: List<Item>, vararg parameters: Any): Fill {
-    TODO()
+fun fillKnapsackHeuristics(capacity: Int, items: List<Item>, vararg parameters: Any): Fill {
+    var currentLoad = 0
+    val insertableItems = items.toMutableList()
+    var selectedItems = Fill()
+    while (insertableItems.isNotEmpty()) {
+        val nextItem = insertableItems.random()
+        if (nextItem.weight + currentLoad <= capacity) {
+            selectedItems += Fill(nextItem)
+            currentLoad += nextItem.weight
+        }
+        insertableItems.remove(nextItem)
+    }
+
+    println(selectedItems)
+    return selectedItems
+}
+
+private fun fillWithRandomItems(capacity: Int, knapsack: Fill, items: List<Item>): Fill {
+    var currentLoad = knapsack.weight
+    val insertableItems = items.toMutableList()
+    var selectedItems = Fill()
+    while (insertableItems.isNotEmpty()) {
+        val nextItem = insertableItems.random()
+        if (nextItem.weight + currentLoad <= capacity) {
+            selectedItems += Fill(nextItem)
+            currentLoad += nextItem.weight
+        }
+        insertableItems.remove(nextItem)
+    }
 }
 
 /**
