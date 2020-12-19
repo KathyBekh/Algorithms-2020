@@ -15,13 +15,7 @@ data class Fill(val cost: Int, val items: Set<Item>) {
 
     fun weight(): Int = items.sumBy { it.weight }
 
-    fun removeItems(amount: Int): Fill {
-        var newItems = items.toMutableSet()
-        for (i in 0 until amount) {
-            newItems.remove(newItems.random())
-        }
-        return Fill(newItems)
-    }
+    fun removeItems(amount: Int): Fill = Fill(items.toMutableList().subList(0, items.size - amount).toSet())
 }
 
 data class LoadCount(val load: Int, val count: Int)
