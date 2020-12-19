@@ -20,10 +20,16 @@ import lesson7.knapsack.Item
  * (не забудьте изменить тесты так, чтобы они передавали эти параметры)
  */
 fun fillKnapsackHeuristics(capacity: Int, items: List<Item>, vararg parameters: Any): Fill {
-    val initialState = fillWithRandomItems(capacity, Fill(), items);
-    var selectedItems = initialState
+    val iterations = 100
+    var selectedItems = fillWithRandomItems(capacity, Fill(), items);
 
-    println(selectedItems)
+    for (i in 0..iterations) {
+        val newSolution = fillWithRandomItems(capacity, Fill(), items)
+        if (newSolution.cost > selectedItems.cost) {
+            selectedItems = newSolution
+        }
+    }
+
     return selectedItems
 }
 
