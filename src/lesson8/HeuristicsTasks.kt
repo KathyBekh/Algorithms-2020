@@ -22,7 +22,7 @@ import kotlin.random.Random
  * (не забудьте изменить тесты так, чтобы они передавали эти параметры)
  */
 fun fillKnapsackHeuristics(capacity: Int, items: List<Item>, vararg parameters: Any): Fill {
-    val iterations = 100
+    val iterations = 10000
     var selectedItems = fillWithRandomItems(capacity, Fill(), items);
 
     for (i in 0..iterations) {
@@ -39,14 +39,13 @@ fun fillKnapsackHeuristics(capacity: Int, items: List<Item>, vararg parameters: 
 private fun fillWithRandomItems(capacity: Int, knapsack: Fill, items: List<Item>): Fill {
     var currentLoad = knapsack.weight()
     val insertableItems = items.toMutableList()
+    insertableItems.shuffle()
     var selectedItems = Fill()
-    while (insertableItems.isNotEmpty()) {
-        val nextItem = insertableItems.random()
-        if (nextItem.weight + currentLoad <= capacity) {
-            selectedItems += Fill(nextItem)
-            currentLoad += nextItem.weight
+    for (item in insertableItems) {
+        if (item.weight + currentLoad <= capacity) {
+            selectedItems += Fill(item)
+            currentLoad += item.weight
         }
-        insertableItems.remove(nextItem)
     }
 
     return selectedItems
