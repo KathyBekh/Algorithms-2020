@@ -37,7 +37,7 @@ fun fillKnapsackHeuristics(capacity: Int, items: List<Item>, vararg parameters: 
 }
 
 private fun fillWithRandomItems(capacity: Int, knapsack: Fill, items: List<Item>): Fill {
-    var currentLoad = knapsack.weight
+    var currentLoad = knapsack.weight()
     val insertableItems = items.toMutableList()
     var selectedItems = Fill()
     while (insertableItems.isNotEmpty()) {
@@ -48,6 +48,8 @@ private fun fillWithRandomItems(capacity: Int, knapsack: Fill, items: List<Item>
         }
         insertableItems.remove(nextItem)
     }
+
+    return selectedItems
 }
 
 /**

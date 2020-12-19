@@ -2,38 +2,16 @@ package lesson7.knapsack
 
 import java.util.*
 
-class Fill {
-    val items: Set<Item>
-    val weight: Int
-    val cost: Int
-
+data class Fill(val cost: Int, val items: Set<Item>) {
     operator fun plus(fill: Fill) = Fill(cost + fill.cost, items + fill.items)
 
     constructor(cost: Int, vararg items: Item) : this(cost, items.toSet())
 
-    constructor(item: Item) {
-        this.items = setOf(item)
-        this.weight = item.weight
-        this.cost = item.cost
-    }
+    constructor(item: Item) : this(item.cost, item)
 
-    constructor(cost: Int, items: Set<Item>) {
-        this.items = items
-        this.weight = items.fold(0, { sum, item -> sum + item.weight })
-        this.cost = cost
-    }
+    constructor() : this(0, emptySet())
 
-    constructor(items: Set<Item>) {
-        this.items = items
-        this.weight = items.fold(0, { sum, item -> sum + item.weight })
-        this.cost = items.fold(0, { sum, item -> sum + item.cost })
-    }
-
-    constructor() {
-        this.items = emptySet()
-        this.weight = 0
-        this.cost = 0
-    }
+    fun weight(): Int = items.fold(0, { sum, item -> sum + item.weight })
 }
 
 data class LoadCount(val load: Int, val count: Int)
