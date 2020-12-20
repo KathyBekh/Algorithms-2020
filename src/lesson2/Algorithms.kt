@@ -2,6 +2,9 @@
 
 package lesson2
 
+import java.io.File
+import kotlin.math.sqrt
+
 /**
  * Получение наибольшей прибыли (она же -- поиск максимального подмассива)
  * Простая
@@ -26,8 +29,25 @@ package lesson2
  *
  * В случае обнаружения неверного формата файла бросить любое исключение.
  */
+//Асимптотическая сложность O(N^2), память O(N)
 fun optimizeBuyAndSell(inputName: String): Pair<Int, Int> {
-    TODO()
+    var pair = Pair(0, 0)
+    var profit = -1
+    val prices = mutableListOf<Int>()
+    File(inputName).forEachLine { line ->
+        prices.add(line.toInt())
+    }
+    val arrayPrices = prices.toIntArray()
+    for (ind in 0..arrayPrices.size) {
+        for (secInd in ind + 1 until arrayPrices.size) {
+            val newProfit = prices[secInd] - prices[ind]
+            if (newProfit > profit) {
+                profit = newProfit
+                pair = Pair(ind + 1, secInd + 1)
+            }
+        }
+    }
+    return pair
 }
 
 /**
@@ -79,8 +99,14 @@ fun optimizeBuyAndSell(inputName: String): Pair<Int, Int> {
  * Общий комментарий: решение из Википедии для этой задачи принимается,
  * но приветствуется попытка решить её самостоятельно.
  */
+//Думала что придумала свой алгоритм, но сравнив его с википедией, поняла что нет:(
+//Асимптотическая сложность O(N), память O(1)
 fun josephTask(menNumber: Int, choiceInterval: Int): Int {
-    TODO()
+    var survivor = 1
+    for (men in 1..menNumber) {
+        survivor = (survivor + choiceInterval - 1) % men + 1
+    }
+    return survivor
 }
 
 /**
@@ -94,8 +120,43 @@ fun josephTask(menNumber: Int, choiceInterval: Int): Int {
  * Если имеется несколько самых длинных общих подстрок одной длины,
  * вернуть ту из них, которая встречается раньше в строке first.
  */
+//Асимптотическая сложность O(N*M*K), память O(N*M*K),
+// где N - длина первой строки, M - длина второй строки и K - длина самой длинной общей подстроки.
 fun longestCommonSubstring(first: String, second: String): String {
-    TODO()
+    var subStr = ""
+    var maxStr = ""
+    val n = first.length
+    val m = second.length
+    val matrix = Array(n) { IntArray(m) { 0 } }
+    for (index in 0 until n) {
+        for (secIndex in 0 until m) {
+            if (first[index] == second[secIndex]) {
+                matrix[index][secIndex] = 1
+            }
+        }
+    }
+    for (index in 0 until n) {
+        for (secIndex in 0 until m) {
+            if (matrix[index][secIndex] == 1) {
+                subStr = first[index].toString()
+                var count = index + 1
+                var secCount = secIndex + 1
+                while (count < n && secCount < m && matrix[count][secCount] == 1) {
+                    subStr += first[count]
+                    count += 1
+                    secCount += 1
+                }
+            }
+            if (subStr.length > maxStr.length) {
+                maxStr = subStr
+            }
+        }
+    }
+    return if (maxStr.length <= 1) {
+        ""
+    } else {
+        maxStr
+    }
 }
 
 /**
@@ -108,6 +169,32 @@ fun longestCommonSubstring(first: String, second: String): String {
  * Справка: простым считается число, которое делится нацело только на 1 и на себя.
  * Единица простым числом не считается.
  */
+//Асимптотическая сложность O(N*sqrt(N)), память O(1)
 fun calcPrimesNumber(limit: Int): Int {
-    TODO()
+    var count = 0
+    for (i in 0..limit) {
+        if (isPrime(i)) {
+            count += 1
+        }
+    }
+    return count
 }
+
+fun isPrime(number: Int): Boolean {
+    if (number <= 1) {
+        return false
+    }
+    if (number <= 3) {
+        return true
+    }
+    if (number % 2 == 0 || number % 3 == 0) {
+        return false
+    }
+    for (i in 5..(sqrt(number.toDouble())).toInt()) {
+        if (number % i == 0) {
+            return false
+        }
+    }
+    return true
+}
+
