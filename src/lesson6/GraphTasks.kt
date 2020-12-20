@@ -2,6 +2,9 @@
 
 package lesson6
 
+import lesson6.impl.GraphBuilder
+import java.util.Stack
+
 /**
  * Эйлеров цикл.
  * Средняя
@@ -28,8 +31,49 @@ package lesson6
  * Справка: Эйлеров цикл -- это цикл, проходящий через все рёбра
  * связного графа ровно по одному разу
  */
+
+//Асимптотическая сложность О()
+//Ресурсоемкость О()
 fun Graph.findEulerLoop(): List<Graph.Edge> {
-    TODO()
+    if (vertices.isEmpty() || !eulerGraph()) {
+        return emptyList()
+    }
+
+    val eulerLoop = mutableListOf<Graph.Edge>()
+    val stackVertices = Stack<Graph.Vertex>()
+    stackVertices.push(vertices.first())
+    val edges = this.edges
+    while (stackVertices.isNotEmpty()) {
+        val currentVertex = stackVertices.peek()
+        for (vertex in vertices) {
+            val edge = getConnection(currentVertex, vertex) ?: continue
+            if (edges.contains(edge)) {
+                stackVertices.push(vertex)
+                edges.remove(edge)
+                break
+            }
+        }
+        if (currentVertex == stackVertices.peek()) {
+            stackVertices.pop()
+            if (stackVertices.isNotEmpty()) {
+                eulerLoop.add(getConnection(currentVertex, stackVertices.peek())!!)
+            }
+        }
+    }
+    return eulerLoop
+}
+
+//Асимптотическая сложность О(V), где V - количество вершин в графе
+//Ресурсоемкость О(V+E)
+fun Graph.eulerGraph(): Boolean {
+    val connections = mutableMapOf<Graph.Vertex, MutableSet<Graph.Vertex>>()
+    for (vertex in vertices) {
+        connections[vertex] = getNeighbors(vertex).toMutableSet()
+        if (connections[vertex]!!.size % 2 != 0) {
+            return false
+        }
+    }
+    return true
 }
 
 /**
@@ -60,8 +104,43 @@ fun Graph.findEulerLoop(): List<Graph.Edge> {
  * |
  * J ------------ K
  */
+
+//Асимптотическая сложность О(V), где V - количество вершин в графе
+//Ресурсоемкость О(V+E)
 fun Graph.minimumSpanningTree(): Graph {
-    TODO()
+    val spanningTree = GraphBuilder()
+    if (vertices.isEmpty()) {
+        return spanningTree.build()
+    }
+
+    val firstVertex = vertices.first()
+    val vertexSet = mutableSetOf(firstVertex)
+    val edgeSet = mutableSetOf<Graph.Edge>()
+
+    fun recurse(vertex: Graph.Vertex) {
+        for ((ver, edg) in getConnections(vertex)) {
+            if (!vertexSet.contains(ver)) {
+                vertexSet.add(ver)
+                edgeSet.add(edg)
+                recurse(ver)
+            }
+        }
+    }
+
+    recurse(firstVertex)
+
+    spanningTree.addVertex(firstVertex.name)
+    if (edgeSet.first().begin == firstVertex)
+        for (edge in edgeSet) {
+            spanningTree.addVertex(edge.end.name)
+            spanningTree.addConnection(edge.begin, edge.end)
+        }
+    else for (edge in edgeSet) {
+        spanningTree.addVertex(edge.begin.name)
+        spanningTree.addConnection(edge.begin, edge.end)
+    }
+
+    return spanningTree.build()
 }
 
 /**
@@ -91,7 +170,22 @@ fun Graph.minimumSpanningTree(): Graph {
  * Эта задача может быть зачтена за пятый и шестой урок одновременно
  */
 fun Graph.largestIndependentVertexSet(): Set<Graph.Vertex> {
-    TODO()
+
+    if (vertices.isEmpty()) return setOf()
+
+    val all = mutableSetOf<Set<Graph.Vertex>>()
+    for (vertex in vertices) {
+        val set = mutableSetOf<Graph.Vertex>()
+        val skip = mutableSetOf<Graph.Vertex>()
+        vertices.stream().filter { next ->
+            !this.getNeighbors(vertex).contains(next) && !skip.contains(next)
+        }.forEach { next ->
+            skip.addAll(this.getNeighbors(next))
+            set.add(next)
+        }
+        all.add(set)
+    }
+    return all.maxByOrNull { it.size } ?: setOf()
 }
 
 /**
@@ -115,7 +209,20 @@ fun Graph.largestIndependentVertexSet(): Set<Graph.Vertex> {
  * Ответ: A, E, J, K, D, C, H, G, B, F, I
  */
 fun Graph.longestSimplePath(): Path {
-    TODO()
+    var path = Path()
+    val stack = Stack<Path>()
+
+    vertices.forEach { stack.push(Path(it)) }
+
+    while (stack.isNotEmpty()) {
+        val currentPath = stack.pop()
+        if (path.length < currentPath.length) path = currentPath
+        val neighbours = getNeighbors(currentPath.vertices[currentPath.length])
+        for (ver in neighbours) {
+            if (ver !in currentPath) stack.push(Path(currentPath, this, ver))
+        }
+    }
+    return path
 }
 
 /**
