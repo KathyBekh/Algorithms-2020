@@ -21,8 +21,13 @@ import kotlin.random.Random
  * Используйте parameters для передачи дополнительных параметров алгоритма
  * (не забудьте изменить тесты так, чтобы они передавали эти параметры)
  */
+
+//Попыталась реализовать алгоритм отжига. В целом он работает, но результаты выдает хуже чем жадный алгоритм.
+//Не понимаю в чём ошиблась. Буду благодарна за подсказку.
+//Асимптотическая сложность О(1), так как заданое кольчество итераций проходит
+//Ресурсоемкость О(fillWithRandomItems())
 fun fillKnapsackHeuristics(capacity: Int, items: List<Item>, vararg parameters: Any): Fill {
-    val iterations = 10000
+    val iterations = 100000
     var selectedItems = fillWithRandomItems(capacity, Fill(), items);
 
     for (i in 0..iterations) {
@@ -36,6 +41,8 @@ fun fillKnapsackHeuristics(capacity: Int, items: List<Item>, vararg parameters: 
     return selectedItems
 }
 
+//Асимптотическая сложность О(items)
+//Ресурсоемкость О(capacity)
 private fun fillWithRandomItems(capacity: Int, knapsack: Fill, items: List<Item>): Fill {
     var currentLoad = knapsack.weight()
     val insertableItems = items.toMutableList()
