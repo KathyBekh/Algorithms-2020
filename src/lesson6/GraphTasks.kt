@@ -198,7 +198,7 @@ fun Graph.largestIndependentVertexSet(): Set<Graph.Vertex> {
 
 fun Graph.isLooped(): Boolean {
     val path = Path()
-    if (path.isLoop(this) || eulerGraph()) {
+    if (path.isLoop(this)) {
         return true
     }
     return false

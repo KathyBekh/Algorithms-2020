@@ -2,8 +2,6 @@
 
 package lesson7
 
-import java.io.File
-
 /**
  * Наибольшая общая подпоследовательность.
  * Средняя
@@ -123,21 +121,21 @@ fun longestIncreasingSubSequence(list: List<Int>): List<Int> {
 
 // Задача не доделана, поэтому тесты не проходит.
 fun shortestPathOnField(inputName: String): Int {
-    val currentPath = mutableMapOf(0 to 0)
-
-    File(inputName).forEachLine { line ->
-        val lineValue = line.split(" ")
-        var count = 0
-        for (element in lineValue) {
-            val pathLength = element.toInt()
-            if (count > 0) {
-
-            }
-            val valueFromCurrentPath = currentPath[count]!! + pathLength
-            currentPath[count] = valueFromCurrentPath
-            count++
-        }
-    }
+//    val currentPath = mutableMapOf(0 to 0)
+//
+//    File(inputName).forEachLine { line ->
+//        val lineValue = line.split(" ")
+//        var count = 0
+//        for (element in lineValue) {
+//            val pathLength = element.toInt()
+//            if (count > 0) {
+//
+//            }
+//            val valueFromCurrentPath = currentPath[count]!! + pathLength
+//            currentPath[count] = valueFromCurrentPath
+//            count++
+//        }
+//    }
     TODO()
 }
 
