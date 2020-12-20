@@ -8,6 +8,7 @@ import java.io.File
 import java.util.*
 import kotlin.math.abs
 import kotlin.system.measureNanoTime
+import kotlin.test.assertFailsWith
 
 abstract class AbstractTaskTests : AbstractFileTests() {
 
@@ -45,6 +46,21 @@ abstract class AbstractTaskTests : AbstractFileTests() {
         } finally {
             File("temp.txt").delete()
         }
+        //My test
+        try {
+            assertFailsWith<IllegalArgumentException> {
+                sortTimes("input/time_in4", "temp.txt")
+            }
+        } finally {
+            File("temp.txt").delete()
+        }
+        try {
+            assertFailsWith<IllegalArgumentException> {
+                sortTimes("input/time_in5", "temp.txt")
+            }
+        } finally {
+            File("temp.txt").delete()
+        }
     }
 
     protected fun sortAddresses(sortAddresses: (String, String) -> Unit) {
@@ -70,6 +86,14 @@ abstract class AbstractTaskTests : AbstractFileTests() {
         try {
             sortAddresses("input/addr_in3.txt", "temp.txt")
             assertFileContent("temp.txt", File("input/addr_out3.txt").readLines())
+        } finally {
+            File("temp.txt").delete()
+        }
+        //My Tests
+        try {
+            assertFailsWith<IndexOutOfBoundsException> {
+                sortAddresses("input/time_in5", "temp.txt")
+            }
         } finally {
             File("temp.txt").delete()
         }
@@ -115,6 +139,14 @@ abstract class AbstractTaskTests : AbstractFileTests() {
                     121.3
                 """.trimIndent()
             )
+        } finally {
+            File("temp.txt").delete()
+        }
+        //My Tests
+        try {
+            assertFailsWith<NumberFormatException> {
+                sortTemperatures("input/time_in5", "temp.txt")
+            }
         } finally {
             File("temp.txt").delete()
         }
@@ -277,6 +309,14 @@ abstract class AbstractTaskTests : AbstractFileTests() {
         } finally {
             File("temp.txt").delete()
         }
+        //My Tests
+        try {
+            assertFailsWith<NumberFormatException> {
+                sortSequence("input/temp_in1.txt", "temp.txt")
+            }
+        } finally {
+            File("temp.txt").delete()
+        }
 
         fun testGeneratedSequence(totalSize: Int, answerSize: Int): PerfResult<Unit> {
             try {
@@ -344,4 +384,6 @@ abstract class AbstractTaskTests : AbstractFileTests() {
 
         println("mergeArrays: $perf")
     }
+    //My tests
+
 }
