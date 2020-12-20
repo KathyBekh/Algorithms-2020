@@ -2,6 +2,8 @@
 
 package lesson7
 
+import java.io.File
+
 /**
  * Наибольшая общая подпоследовательность.
  * Средняя
@@ -14,8 +16,40 @@ package lesson7
  * Если есть несколько самых длинных общих подпоследовательностей, вернуть любую из них.
  * При сравнении подстрок, регистр символов *имеет* значение.
  */
+
+//Асимптотическая сложность О(N*M), где N-длина строки first, M-длина строки second.
+//ПамятьО(k), где k- длина найденной подпоследовательности.
 fun longestCommonSubSequence(first: String, second: String): String {
-    TODO()
+    val firstLength: Int = first.length
+    val secondLength: Int = second.length
+
+    val matrix = Array(firstLength + 1) { IntArray(secondLength + 1) }
+
+    for (i in firstLength - 1 downTo 0) {
+        for (j in secondLength - 1 downTo 0) {
+            if (first[i] == second[j]) {
+                matrix[i][j] = matrix[i + 1][j + 1] + 1
+            } else {
+                matrix[i][j] = matrix[i + 1][j].coerceAtLeast(matrix[i][j + 1])
+            }
+        }
+    }
+
+    var i = 0
+    var j = 0
+    var generalSubsequence = ""
+    while (i < firstLength && j < secondLength) {
+        if (first[i] == second[j]) {
+            generalSubsequence += first[i]
+            i++
+            j++
+        } else if (matrix[i + 1][j] >= matrix[i][j + 1]) {
+            i++
+        } else {
+            j++
+        }
+    }
+    return generalSubsequence
 }
 
 /**
@@ -30,8 +64,40 @@ fun longestCommonSubSequence(first: String, second: String): String {
  * то вернуть ту, в которой числа расположены раньше (приоритет имеют первые числа).
  * В примере ответами являются 2, 8, 9, 12 или 2, 5, 9, 12 -- выбираем первую из них.
  */
+
+//Асимптотическая сложность О(N^2), где N-длина входящего списка.
+//ПамятьО(k), где k- длина найденной подпоследовательности.
 fun longestIncreasingSubSequence(list: List<Int>): List<Int> {
-    TODO()
+    val matrix = Array(list.size) { IntArray(2) }
+    var maxLength = 0
+
+    for (i in list.indices) {
+        matrix[i][0] = -1
+        matrix[i][1] = 1
+        for (j in i - 1 downTo 0) {
+            if (list[i] > list[j]) {
+                if (matrix[i][1] <= matrix[j][1] + 1) {
+                    matrix[i][1] = matrix[j][1] + 1
+                    matrix[i][0] = j
+                }
+            }
+        }
+        maxLength = maxLength.coerceAtLeast(matrix[i][1])
+    }
+    val maxSubsequence = mutableListOf<Int>()
+
+    for (i in list.indices) {
+        if (matrix[i][1] == maxLength) {
+            var currentIndex = i
+            while (currentIndex != -1) {
+                maxSubsequence.add(list[currentIndex])
+                currentIndex = matrix[currentIndex][0]
+            }
+            break
+        }
+    }
+    maxSubsequence.reverse()
+    return maxSubsequence
 }
 
 /**
@@ -54,7 +120,24 @@ fun longestIncreasingSubSequence(list: List<Int>): List<Int> {
  *
  * Здесь ответ 2 + 3 + 4 + 1 + 2 = 12
  */
+
+// Задача не доделана, поэтому тесты не проходит.
 fun shortestPathOnField(inputName: String): Int {
+    val currentPath = mutableMapOf(0 to 0)
+
+    File(inputName).forEachLine { line ->
+        val lineValue = line.split(" ")
+        var count = 0
+        for (element in lineValue) {
+            val pathLength = element.toInt()
+            if (count > 0) {
+
+            }
+            val valueFromCurrentPath = currentPath[count]!! + pathLength
+            currentPath[count] = valueFromCurrentPath
+            count++
+        }
+    }
     TODO()
 }
 
