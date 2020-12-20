@@ -32,8 +32,8 @@ import java.util.Stack
  * связного графа ровно по одному разу
  */
 
-//Асимптотическая сложность О()
-//Ресурсоемкость О()
+//Асимптотическая сложность О(V), где V - количество вершин в графе
+//Ресурсоемкость О(V+E)
 fun Graph.findEulerLoop(): List<Graph.Edge> {
     if (vertices.isEmpty() || !eulerGraph()) {
         return emptyList()
@@ -42,7 +42,7 @@ fun Graph.findEulerLoop(): List<Graph.Edge> {
     val eulerLoop = mutableListOf<Graph.Edge>()
     val stackVertices = Stack<Graph.Vertex>()
     stackVertices.push(vertices.first())
-    val edges = this.edges
+    val edges = edges
     while (stackVertices.isNotEmpty()) {
         val currentVertex = stackVertices.peek()
         for (vertex in vertices) {
@@ -105,7 +105,7 @@ fun Graph.eulerGraph(): Boolean {
  * J ------------ K
  */
 
-//Асимптотическая сложность О(V), где V - количество вершин в графе
+//Асимптотическая сложность О(V*E), где V - количество вершин в графе, E - количество ребер в графе
 //Ресурсоемкость О(V+E)
 fun Graph.minimumSpanningTree(): Graph {
     val spanningTree = GraphBuilder()
@@ -118,10 +118,10 @@ fun Graph.minimumSpanningTree(): Graph {
     val edgeSet = mutableSetOf<Graph.Edge>()
 
     fun recurse(vertex: Graph.Vertex) {
-        for ((ver, edg) in getConnections(vertex)) {
+        for ((ver, edge) in getConnections(vertex)) {
             if (!vertexSet.contains(ver)) {
                 vertexSet.add(ver)
-                edgeSet.add(edg)
+                edgeSet.add(edge)
                 recurse(ver)
             }
         }
@@ -169,23 +169,39 @@ fun Graph.minimumSpanningTree(): Graph {
  *
  * Эта задача может быть зачтена за пятый и шестой урок одновременно
  */
+
+//Асимптотическая сложность О(V*E), где V - количество вершин в графе, E - количество ребер в графе
+//Ресурсоемкость О(V+E)
 fun Graph.largestIndependentVertexSet(): Set<Graph.Vertex> {
 
-    if (vertices.isEmpty()) return setOf()
+    if (vertices.isEmpty()) {
+        return setOf()
+    }
+    if (isLooped()) {
+        throw IllegalArgumentException("Graph must not contain loops")
+    }
 
     val all = mutableSetOf<Set<Graph.Vertex>>()
     for (vertex in vertices) {
         val set = mutableSetOf<Graph.Vertex>()
         val skip = mutableSetOf<Graph.Vertex>()
         vertices.stream().filter { next ->
-            !this.getNeighbors(vertex).contains(next) && !skip.contains(next)
+            !getNeighbors(vertex).contains(next) && !skip.contains(next)
         }.forEach { next ->
-            skip.addAll(this.getNeighbors(next))
+            skip.addAll(getNeighbors(next))
             set.add(next)
         }
         all.add(set)
     }
     return all.maxByOrNull { it.size } ?: setOf()
+}
+
+fun Graph.isLooped(): Boolean {
+    val path = Path()
+    if (path.isLoop(this) || eulerGraph()) {
+        return true
+    }
+    return false
 }
 
 /**
@@ -208,21 +224,11 @@ fun Graph.largestIndependentVertexSet(): Set<Graph.Vertex> {
  *
  * Ответ: A, E, J, K, D, C, H, G, B, F, I
  */
+
+//Асимптотическая сложность О(), где V - количество вершин в графе, E - количество ребер в графе
+//Ресурсоемкость О()
 fun Graph.longestSimplePath(): Path {
-    var path = Path()
-    val stack = Stack<Path>()
-
-    vertices.forEach { stack.push(Path(it)) }
-
-    while (stack.isNotEmpty()) {
-        val currentPath = stack.pop()
-        if (path.length < currentPath.length) path = currentPath
-        val neighbours = getNeighbors(currentPath.vertices[currentPath.length])
-        for (ver in neighbours) {
-            if (ver !in currentPath) stack.push(Path(currentPath, this, ver))
-        }
-    }
-    return path
+    TODO()
 }
 
 /**

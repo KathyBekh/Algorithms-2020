@@ -3,7 +3,7 @@ package lesson6
 import lesson6.impl.GraphBuilder
 import org.junit.jupiter.api.Test
 
-class GraphTestMy {
+class GraphTestMine {
     @Test
     fun graph() {
         val graph = GraphBuilder().apply {
@@ -13,9 +13,10 @@ class GraphTestMy {
             addConnection(a, b)
             addConnection(b, c)
             addConnection(c, a)
-            addConnection(a, c)
         }.build()
-        println("Edgos: ${graph.edges}")
+        println("Edges: ${graph.edges}")
         println("Vertex: ${graph.vertices}")
+        println(graph.findEulerLoop())
     }
+
 }

@@ -121,6 +121,46 @@ abstract class AbstractGraphTests {
         }.build()
         val loop3 = graph3.findEulerLoop()
         loop3.assert(shouldExist = false, graph = graph3)
+
+        val graph4 = GraphBuilder().apply {
+        }.build()
+        val loop4 = graph4.findEulerLoop()
+        loop4.assert(shouldExist = false, graph = graph4)
+
+        //  B           C
+        //    \       /
+        //        A
+        //    /       \
+        //  D           E
+
+        val graph5 = GraphBuilder().apply {
+            val a = addVertex("A")
+            val b = addVertex("B")
+            val c = addVertex("C")
+            val d = addVertex("D")
+            val e = addVertex("E")
+            addConnection(a, b)
+            addConnection(a, c)
+            addConnection(a, d)
+            addConnection(a, e)
+        }.build()
+        val loop5 = graph5.findEulerLoop()
+        loop5.assert(shouldExist = false, graph = graph5)
+
+        val graph6 = GraphBuilder().apply {
+            val a = addVertex("A")
+            val b = addVertex("B")
+            val c = addVertex("C")
+            val d = addVertex("D")
+            val e = addVertex("E")
+            addConnection(a, d)
+            addConnection(a, c)
+            addConnection(e, b)
+            addConnection(c, e)
+            addConnection(b, d)
+        }.build()
+        val loop6 = graph6.findEulerLoop()
+        loop6.assert(shouldExist = true, graph = graph6)
     }
 
     fun minimumSpanningTree(minimumSpanningTree: Graph.() -> Graph) {
@@ -181,6 +221,22 @@ abstract class AbstractGraphTests {
         val tree3 = graph3.minimumSpanningTree()
         assertEquals(4, tree3.edges.size)
         assertEquals(4, tree3.findBridges().size)
+
+        val graph4 = GraphBuilder().apply {
+            val a = addVertex("A")
+            val b = addVertex("B")
+            val c = addVertex("C")
+            val d = addVertex("D")
+            val e = addVertex("E")
+            addConnection(a, d)
+            addConnection(a, c)
+            addConnection(e, b)
+            addConnection(c, e)
+            addConnection(b, d)
+        }.build()
+        val tree4 = graph4.minimumSpanningTree()
+        assertEquals(4, tree4.edges.size)
+        assertEquals(4, tree4.findBridges().size)
     }
 
     fun largestIndependentVertexSet(largestIndependentVertexSet: Graph.() -> Set<Graph.Vertex>) {
